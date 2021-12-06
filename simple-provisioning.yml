@@ -1,0 +1,27 @@
+---
+
+- name: simple-provisioning
+  hosts: localhost          #provisioning 이기 때문에 localhost를 입력한다
+  connection: local         #ssh로 접속하지 않으므로 local을 입력한다.
+  gather_facts: false       #시작할때 host의 정보를 수집하지 않겠다는 뜻 
+  vars:
+    aws_region: ap-northeast-2   #서율리전
+#    aws_region: ap-northeast-1   #도쿄리전
+    vpc_name: simple-vpc
+    vpc_cidr_block: 10.210.0.0/16  #B클래스 크기
+    subnet_cidr_block: 10.210.1.0/24  #C클래스 크기
+    instance_image: ami-0b827f3319f7447c6  #서울리전
+#    instance_image: ami-06098fd00463352b6  #도쿄리전
+    ec2_key_name: youngki-seoul
+    instance_type: t2.micro
+    
+  tasks:
+  - name: create vpc
+    ec2_vpc_net:
+      name: "{{ vpc_name }}"
+      cidr_block: "{{ vpc_cidr_block }}"
+      region: "{{ aws_region }}"
+      tags:
+        Name: "{{ vpc_name }}"
+      tenancy: default      #전용 VPC가 아닌 기본 VPC사용
+    register: result_vpc
