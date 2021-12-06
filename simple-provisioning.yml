@@ -69,4 +69,16 @@
           - 80
           - 22               #ansible설치를 위해 추가한다
           cidr_ip: 0.0.0.0/0
-          rule_desc: allow all on port 80  
+          rule_desc: allow all on port 80
+          
+  - name: create EC2
+    ec2:
+      key_name: "{{ ec2_key_name }}"
+      instance_type: "{{ instance_type }}"
+      image: "{{ instance_image }}"
+      wait: no               #생성완료까지 기다리지 않으므로 no로 변경
+      group: public SG       #scurity group이름 입력
+      count: 1
+      region: "{{ aws_region }}"
+      vpc_subnet_id: "{{ result_subnet.subnet.id }}"
+      assign_public_ip: yes
