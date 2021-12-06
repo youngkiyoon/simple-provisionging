@@ -1,0 +1,16 @@
+---
+
+  - name: create security group
+    ec2_group:
+      name: public SG
+      description: sg with rule descriptions
+      vpc_id: "{{ result_vpc.vpc.id }}"
+#      profile: "{{ aws_profile }}"        #devOS에 Credential을 등록했기때문에 생략한다
+      region: "{{ aws_region }}"
+      rules:
+        - proto: tcp
+          ports:
+          - 80
+          - 22               #ansible설치를 위해 추가한다
+          cidr_ip: 0.0.0.0/0
+          rule_desc: allow all on port 80

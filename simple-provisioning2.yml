@@ -1,0 +1,15 @@
+---
+
+- name: simple-provisioning
+  hosts: localhost          #provisioning 이기 때문에 localhost를 입력한다
+  connection: local         #ssh로 접속하지 않으므로 local을 입력한다.
+  gather_facts: false       #시작할때 host의 정보를 수집하지 않겠다는 뜻 
+  vars_files: group_vars/vars.yml    
+  roles:
+    - role: vpc
+    - role: subnet
+    - role: igw
+    - role: route_table
+    - role: security_group
+    - role: ec2  
+ 

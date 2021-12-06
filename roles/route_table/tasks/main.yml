@@ -1,0 +1,14 @@
+---
+
+  - name: Set up public subnet route table
+    ec2_vpc_route_table:
+      vpc_id: "{{ result_vpc.vpc.id }}"
+      region: "{{ aws_region }}"
+      tags:
+        Name: Public
+      subnets:
+        - "{{ result_subnet.subnet.id }}"
+      routes:
+        - dest: 0.0.0.0/0
+          gateway_id: "{{ result_igw.gateway_id }}"
+    register: result_route_table

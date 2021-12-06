@@ -1,0 +1,8 @@
+---
+
+  - name: create igw
+    ec2_vpc_igw:
+      region: "{{ aws_region }}"            #region은 반드시 추가하자
+      vpc_id: "{{ result_vpc.vpc.id }}"
+      state: present
+    register: result_igw
