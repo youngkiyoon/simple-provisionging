@@ -25,3 +25,48 @@
         Name: "{{ vpc_name }}"
       tenancy: default      #전용 VPC가 아닌 기본 VPC사용
     register: result_vpc
+    
+  - name: Create subnet
+    ec2_vpc_subnet:
+      state: present
+      region: "{{ aws_region }}"            #region은 반드시 추가하자
+      vpc_id: "{{ result_vpc.vpc.id }}"
+      cidr: "{{ subnet_cidr_block }}"
+      tags:
+        Name: webserver Subnet
+    register: result_subnet
+    
+  - name: create igw
+    ec2_vpc_igw:
+      region: "{{ aws_region }}"            #region은 반드시 추가하자
+      vpc_id: "{{ result_vpc.vpc.id }}"
+      state: present
+    register: result_igw
+    
+  - name: Set up public subnet route table
+    ec2_vpc_route_table:
+      vpc_id: "{{ result_vpc.vpc.id }}"
+      region: "{{ aws_region }}"
+      tags:
+        Name: Public
+      subnets:
+        - "{{ result_subnet.subnet.id }}"
+      routes:
+        - dest: 0.0.0.0/0
+          gateway_id: "{{ result_igw.gateway_id }}"
+    register: result_route_table
+    
+  - name: create security group
+    ec2_group:
+      name: public SG
+      description: sg with rule descriptions
+      vpc_id: "{{ result_vpc.vpc.id }}"
+#      profile: "{{ aws_profile }}"        #devOS에 Credential을 등록했기때문에 생략한다
+      region: "{{ aws_region }}"
+      rules:
+        - proto: tcp
+          ports:
+          - 80
+          - 22               #ansible설치를 위해 추가한다
+          cidr_ip: 0.0.0.0/0
+          rule_desc: allow all on port 80  

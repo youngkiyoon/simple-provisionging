@@ -1,6 +1,0 @@
----
-
-- name: simple-provisioning
-  hosts: localhost          #provisioning 이기 때문에 localhost 
-  
-  
